@@ -1,0 +1,9 @@
+---
+# tasks file for register-keys
+
+- name: generate register keys
+  template: src=register-keys.j2 dest={{ lookup('env','HOME') }}/register-keys.sh
+  delegate_to: localhost
+
+- name: run register-keys
+  script: /{{ lookup('env','HOME') }}/register-keys.sh

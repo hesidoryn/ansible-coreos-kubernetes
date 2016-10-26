@@ -1,0 +1,87 @@
+---
+# tasks file for master
+
+- name: Create /srv/kubernetes/manifests Folder
+  file: path=/srv/kubernetes/manifests state=directory mode=0777
+  sudo: yes
+
+- name: Write API_OPENSSL.CNF file
+  template: src=api-openssl.j2 dest=/etc/kubernetes/ssl/api-openssl.cnf
+  sudo: yes
+
+- name: Create api server OpenSSL config
+  script: api-server-config.sh
+  sudo: yes
+
+- name: Generate the Cluster Administrator Keypair
+  script: cluster-administration-keypair.sh
+  sudo: yes
+
+- name: Write kubelet service file
+  template: src=master-kubelet-service.j2 dest=/etc/systemd/system/kubelet.service
+  sudo: yes
+
+- name: Write host-rkt
+  template: src=host-rkt.j2 dest=/opt/bin/host-rkt
+  sudo: yes
+
+- name: Write kube proxy file
+  template: src=master-kube-proxy.j2 dest=/etc/kubernetes/manifests/kube-proxy.yaml
+  sudo: yes
+
+- name: Write kube apiserver file
+  template: src=kube-apiserver.j2 dest=/etc/kubernetes/manifests/kube-apiserver.yaml
+  sudo: yes
+
+- name: Write kube controller-manager file
+  template: src=kube-controller-manager.j2 dest=/etc/kubernetes/manifests/kube-manager.yaml
+  sudo: yes
+
+- name: Write kube scheduler file
+  template: src=kube-scheduler.j2 dest=/etc/kubernetes/manifests/kube-scheduler.yaml
+  sudo: yes
+
+- name: Write kube dns rc file
+  template: src=kube-dns-rc.j2 dest=/srv/kubernetes/manifests/kube-dns-rc.yaml
+  sudo: yes
+
+- name: Write kube dns svc file
+  template: src=kube-dns-svc.j2 dest=/srv/kubernetes/manifests/kube-dns-svc.yaml
+  sudo: yes
+
+- name: Write heapster de file
+  template: src=heapster-de.j2 dest=/srv/kubernetes/manifests/heapster-de.yaml
+  sudo: yes
+
+- name: Write heapster svc file
+  template: src=heapster-svc.j2 dest=/srv/kubernetes/manifests/heapster-svc.yaml
+  sudo: yes
+
+- name: Write kube dashboard rc file
+  template: src=kube-dashboard-rc.j2 dest=/srv/kubernetes/manifests/kube-dashboard-rc.yaml
+  sudo: yes
+
+- name: Write kube dashboard svc file
+  template: src=kube-dashboard-svc.j2 dest=/srv/kubernetes/manifests/kube-dashboard-svc.yaml
+  sudo: yes
+
+- name: Write options.env file
+  template: src=options-env.j2 dest=/etc/flannel/options.env
+  sudo: yes
+
+- name: Write 40-ExecStartPre-symlink file
+  template: src=40-ExecStartPre-symlink.j2 dest=/etc/systemd/system/flanneld.service.d/40-ExecStartPre-symlink.conf.conf
+  sudo: yes
+
+- name: Write 40-flannel file
+  template: src=40-flannel.j2 dest=/etc/systemd/system/docker.service.d/40-flannel.conf
+  sudo: yes
+
+- name: Install controller
+  script: controller-install.sh
+  sudo: yes
+
+- fetch: src=/etc/kubernetes/ssl/{{ item }} dest={{ lookup('env','HOME') }}/{{ item }} flat=yes
+  with_items:
+    - "admin.pem"
+    - "admin-key.pem"

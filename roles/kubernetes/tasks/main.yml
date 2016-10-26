@@ -1,0 +1,19 @@
+---
+# tasks file for kubernetes
+
+- name: Create system folder
+  file: path=/etc/systemd/system/docker.service.d state=directory mode=0777
+
+- name: Create manifests Folder
+  file: path=/etc/kubernetes/manifests state=directory mode=0777
+
+- name: Create flannel folder
+  file: path=/etc/flannel state=directory mode=0777
+
+- name: Create SSL Folder
+  file: path=/etc/kubernetes/ssl state=directory mode=0777
+
+- copy: src={{ lookup('env','HOME') }}/{{ item }} dest=/etc/kubernetes/ssl/{{ item }} mode=0777
+  with_items:
+    - "ca.pem"
+    - "ca-key.pem"

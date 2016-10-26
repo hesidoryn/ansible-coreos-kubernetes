@@ -1,0 +1,42 @@
+---
+# tasks file for workers
+
+- name: Write WORKER_OPENSSL.CNF file
+  template: src=worker-openssl.j2 dest=/etc/kubernetes/ssl/worker-openssl.cnf
+  sudo: yes
+
+- name: Create workers OpenSSL config
+  script: workers-config.sh creates=dest=/etc/kubernetes/ssl/worker.pem
+  sudo: yes
+
+- name: Write kubelet service file
+  template: src=worker-kubelet-service.j2 dest=/etc/systemd/system/kubelet.service
+  sudo: yes
+
+- name: Write host-rkt
+  template: src=host-rkt.j2 dest=/opt/bin/host-rkt
+  sudo: yes
+
+- name: Write worker-kubeconfig file
+  template: src=worker-kubeconfig.j2 dest=/etc/kubernetes/worker-kubeconfig.yaml
+  sudo: yes
+
+- name: Write kube-proxy file
+  template: src=worker-kube-proxy.j2 dest=/etc/kubernetes/manifests/kube-proxy.yaml
+  sudo: yes
+
+- name: Write options.env file
+  template: src=options-env.j2 dest=/etc/flannel/options.env
+  sudo: yes
+
+- name: Write 40-ExecStartPre-symlink file
+  template: src=40-ExecStartPre-symlink.j2 dest=/etc/systemd/system/flanneld.service.d/40-ExecStartPre-symlink.conf.conf
+  sudo: yes
+
+- name: Write 40-flannel file
+  template: src=40-flannel.j2 dest=/etc/systemd/system/docker.service.d/40-flannel.conf
+  sudo: yes
+
+- name: Install workers
+  script: worker-install.sh
+  sudo: yes

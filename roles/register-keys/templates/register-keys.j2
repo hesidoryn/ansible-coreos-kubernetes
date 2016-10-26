@@ -1,0 +1,6 @@
+#!/bin/bash
+
+kubectl config set-cluster default-cluster --server=https://{{ hostvars[groups['kubernetes'][0]].inventory_hostname }} --certificate-authority=${HOME}/ca.pem
+kubectl config set-credentials default-admin --certificate-authority=${HOME}/ca.pem --client-key=${HOME}/admin-key.pem --client-certificate=${HOME}/admin.pem
+kubectl config set-context default-system --cluster=default-cluster --user=default-admin
+kubectl config use-context default-system

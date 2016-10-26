@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  roles:
+    - certs
+
+- hosts: kubernetes
+  become: true
+  gather_facts: False
+  roles:
+    - python-coreos
+    - kubernetes
+
+- hosts: master
+  become: true
+  roles:
+    - master
+
+- hosts: workers
+  become: true
+  roles:
+    - workers
+
+- hosts: localhost
+  roles:
+    - register-keys

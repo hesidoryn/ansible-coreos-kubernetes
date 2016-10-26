@@ -1,0 +1,25 @@
+localhost ansible_connection=local
+
+[master]
+138.68.106.234
+
+[workers]
+138.68.106.233
+138.68.106.232
+
+[kubernetes:children]
+master
+workers
+
+[kubernetes:vars]
+ansible_ssh_user=core
+ansible_python_interpreter=/opt/bin/python
+K8S_SERVICE_IP=10.3.0.1
+SERVICE_IP_RANGE=10.3.0.0/24
+HYPERKUBE_IMAGE_REPO=quay.io/coreos/hyperkube
+K8S_VER=v1.4.0_coreos.0
+DNS_SERVICE_IP=10.3.0.10
+CONTAINER_RUNTIME=docker
+
+[localhost]
+localhost

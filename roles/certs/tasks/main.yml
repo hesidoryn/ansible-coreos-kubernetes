@@ -1,0 +1,5 @@
+---
+# tasks file for certs
+
+- name: Create a Cluster Root CA
+  script: cluster-root-CA.sh
